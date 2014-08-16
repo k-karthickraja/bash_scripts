@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# 
+#	Implemented on : 04/07/14
+# Version        : 1
+
+# It has support two options -t and -p ,
+# -t is for adding time into your file.  ( <script_name> -t 11:38 
+# -p is for appending string into your filee  ( <script_name> -p "your string" ) 
+# Note currently the -p option appends all the remaining arguments into the file. 
+#   So we dont use this script as -p "asdas" -t 11:32  
+
+
+args=`getopt t:p $@` 			# Align the option and its argument to get first.
+set -- $args
+
+xoxpath="/home/$USER/XOX"
+declare -i n=0;
+
+while true ; do 
+	case "$1" in 
+		-t )
+			# command was invoked with -t .
+			# validating argument passed by -t.
+
+			if [[ $2 =~ ^[0-9][0-9]:[0-9][0-9]$ ]] ; then 
+				arg_time="$2" ;
+				shift ;	shift ;
+			else
+				printf "\nxox : Argument was -t was in wrong format\n";
+				printf "usage: xox -t HH:MM \n"
+				exit 3;
+			fi
+			;;		# case terminator.
+		-p ) 
+			shift ; shift ; 
+			arg_pass="$@" ;
+			break ;;
+		-- )
+			shift ; break ;; # To shift the -- symbol(posted by getopt )
+		* ) 
+			printf "xox : Invalid option $1"
+			shift;;
+	esac
+done
+	
+
+if [[ $1 =~ ^[0-9]+$ ]] ; then 	# if next argument is n .
+	n=$1
+fi
+
+#get exact path of the file.
+
+	dow=`date -d "$n days ago" \+%a` # if sunday then i opened the previous day's XOX.
+
+if [ $dow == "Sun" ] ; then
+	echo "Your requested date is Sunday,So previous day xox is opening..."
+	sleep 3;		# For display the message for some time. 
+	let n+=1;
+fi
+
+year=`date -d "$n days ago" \+%Y`
+month=`date -d "$n days ago" \+%b`
+date=`date -d "$n days ago" \+%d%b`
+filename="$xoxpath/$year/$month/$date.txt"
+	
+	
+if [ ! -e $filename ] ; then
+	mkdir -p $xoxpath/$year/$month			#it will create a new directory if not exist
+	echo -e "$USER\n`date -d "$n days ago " "+%d %b %Y %a"`\nTO-DO:\n\t1."|cat - >$filename #file created.
+fi
+	
+if [ -n "$arg_time" ] || [ -n "$arg_pass" ] ; then 
+
+	echo -e $arg_time $arg_pass >>$filename; 	# Appending time to last line,
+	exit 0
+fi
+	
+vim + $filename;			# Open in vim with last line.
+xp $fil
