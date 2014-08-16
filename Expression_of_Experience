@@ -11,6 +11,11 @@
 #   So we dont use this script as -p "asdas" -t 11:32  
 
 
+
+# also we can pass the numerical argument to open previous day file
+# script_name 1   --- to open the yesterday file.
+
+
 args=`getopt t:p $@` 			# Align the option and its argument to get first.
 set -- $args
 
@@ -67,7 +72,7 @@ filename="$xoxpath/$year/$month/$date.txt"
 	
 if [ ! -e $filename ] ; then
 	mkdir -p $xoxpath/$year/$month			#it will create a new directory if not exist
-	echo -e "$USER\n`date -d "$n days ago " "+%d %b %Y %a"`\nTO-DO:\n\t1."|cat - >$filename #file created.
+	echo -e "$USER\n`date -d "$n days ago " "+%d %b %Y %a"`\n"|cat - >$filename #file created.
 fi
 	
 if [ -n "$arg_time" ] || [ -n "$arg_pass" ] ; then 
@@ -77,4 +82,3 @@ if [ -n "$arg_time" ] || [ -n "$arg_pass" ] ; then
 fi
 	
 vim + $filename;			# Open in vim with last line.
-xp $fil
